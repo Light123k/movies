@@ -3,23 +3,26 @@ import Navbar from './Components/Navbar';
 import Banner from './Components/Banner'
 import Movielists from './Components/Movielists';
 import Favourites from './Components/Favourites';
-import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom'
+import Moviedescription from './Components/Moviedescription';
+import { BrowserRouter as Router, Switch, Route, BrowserRouter } from 'react-router-dom'
 function App() {
   return (
     <BrowserRouter>
 
 
       <Navbar />
-      <Routes>
+      <Switch>
         {/* <Route exact path='/' element={<Movielists />} /> */}
         <Route path="/" exact render={(props) => (
           <>
             <Banner {...props} />
             <Movielists {...props} />
           </>
+
         )} />
-        <Route path='/favourites' element={<Favourites />} />
-      </Routes>
+        <Route path='/favourites' component={Favourites} />
+        <Route path="/moviedescription" component={Moviedescription} />
+      </Switch>
 
 
     </BrowserRouter>

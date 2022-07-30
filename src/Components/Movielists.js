@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 //import { movies } from "./getmovies";
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 export default class Movielists extends Component {
     constructor() {
@@ -9,7 +10,8 @@ export default class Movielists extends Component {
             hover: '',
             parr: [1],
             currpage: 1,
-            movies: []
+            movies: [],
+            favourites: []
         }
     }
    /*Api data get*/ async componentDidMount() {
@@ -26,6 +28,25 @@ export default class Movielists extends Component {
         const data = res.data
         this.setState({
             movies: [...data.results]
+        })
+    }
+    handlefavourites = (movieobj) => {
+        let olddata = JSON.parse(localStorage.getItem('movies') || "[]")
+        if (this.state.favourites.includes(movieobj.id)) {
+            olddata = olddata.filter((m) => m.id !== movieobj.id)
+        }
+        else {
+            olddata.push(movieobj)
+        }
+        localStorage.setItem('movies', JSON.stringify(olddata))
+        console.log(olddata)
+        this.handlefavouritesstate()
+    }
+    handlefavouritesstate = () => {
+        let olddata = JSON.parse(localStorage.getItem('movies') || "[]")
+        let temp = olddata.map((old) => old.id)
+        this.setState({
+            favourites: [...temp]
         })
     }
     handleclick = (value) => {
@@ -61,17 +82,17 @@ export default class Movielists extends Component {
         console.log('render')
         return (
             <>
-                <h2 className='text-center'><bold>Trending</bold></h2>
+                <h2 className='text-center'><strong>Trending</strong></h2>
                 <div className='movies-list'>
                     {
                         this.state.movies.map((movieobj) => (
                             <div className="card movies-card" onMouseEnter={() => this.setState({ hover: movieobj.id })} onMouseLeave={() => this.setState({ hover: '' })}>
                                 <img src={`https://image.tmdb.org/t/p/original${movieobj.backdrop_path}`} class="card-img-top movies-img" alt={movieobj.title} />
                                 <div className="card-body">
-                                    <h5 class="card-title movies-title" >{movieobj.original_title}</h5>
+                                    <Link to="/moviedescription" style={{ textDecoration: 'none' }}><h5 class="card-title movies-title" >{movieobj.original_title}</h5></Link>
                                     {/* <p className="card-text banner-text">{movieobj.overview}</p> */}
                                     {
-                                        this.state.hover === movieobj.id && <a href="#" class="btn btn-primary movies-button">Add to Favourites</a>
+                                        this.state.hover === movieobj.id && <a href="#" class="btn btn-primary movies-button" onClick={() => this.handlefavourites(movieobj)}>{this.state.favourites.includes(movieobj.id) ? "Remove from favourites" : "Add to favourites"}</a>
                                     }
 
 
