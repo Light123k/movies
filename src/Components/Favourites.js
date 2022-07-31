@@ -10,7 +10,8 @@ export default class Favourites extends Component {
             currgen: 'All genres',
             movies: [],
             currText: '',
-
+            limit: 5,
+            currpage: 1
         }
     }
     componentDidMount() {
@@ -33,6 +34,47 @@ export default class Favourites extends Component {
     handlegenrechange = (genre) => {
         this.setState({
             currgen: genre
+        })
+    }
+    sortpopularitydesc = () => {
+        let temp = this.state.movies;
+        temp.sort(function (obj1, obj2) {
+            return obj2.popularity - obj1.popularity
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+    sortpopularityasc = () => {
+        let temp = this.state.movies;
+        temp.sort(function (obj1, obj2) {
+            return obj1.popularity - obj2.popularity
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+    sortratingdesc = () => {
+        let temp = this.state.movies;
+        temp.sort(function (obj1, obj2) {
+            return obj2.vote_average - obj1.vote_average
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+    sortratingasc = () => {
+        let temp = this.state.movies;
+        temp.sort(function (obj1, obj2) {
+            return obj1.vote_average - obj2.vote_average
+        })
+        this.setState({
+            movies: [...temp]
+        })
+    }
+    handlepagechange = (page) => {
+        this.setState({
+            currpage: page
         })
     }
 
@@ -58,6 +100,16 @@ export default class Favourites extends Component {
             filterarr = this.state.movies.filter((movieobj) => genreids[movieobj.genre_ids[0]] === this.state.currgen)
             //this.handlearr(filterarr);
         }
+        let pages = Math.ceil(filterarr.length / this.state.limit)
+        let pagearr = []
+        for (let i = 1; i <= pages; i++) {
+            pagearr.push(i)
+        }
+        let si = (this.state.currpage - 1) * this.state.limit;
+        let ei = si + this.state.limit
+        filterarr = filterarr.slice(si, ei);
+        console.log(pages)
+
         return (
             <>
 
@@ -77,7 +129,7 @@ export default class Favourites extends Component {
                     <div className='col-9'>
                         <div className='row'>
                             <input type="text" className='input-group-text col' placeholder='search' value={this.state.currText} onChange={(e) => this.setState({ currText: e.target.value })} />
-                            <input type="number" className='input-group-text col' placeholder='rows count' />
+                            <input type="number" className='input-group-text col' placeholder='rows count' value={this.state.limit} onChange={(e) => this.setState({ limit: e.target.value })} />
                         </div>
                         <div className='row'>
                             <table class="table">
@@ -85,8 +137,8 @@ export default class Favourites extends Component {
                                     <tr>
                                         <th scope="col">Title</th>
                                         <th scope="col">Genre</th>
-                                        <th scope="col"><i class="fa-solid fa-sort-up"></i>Popularity<i class="fa-solid fa-sort-down"></i></th>
-                                        <th scope="col">Rating</th>
+                                        <th scope="col"><i class="fa-solid fa-sort-up" onClick={this.sortpopularitydesc}></i>Popularity<i class="fa-solid fa-sort-down" onClick={this.sortpopularityasc}></i></th>
+                                        <th scope="col"><i class="fa-solid fa-sort-up" onClick={this.sortratingdesc}></i>Rating<i class="fa-solid fa-sort-down" onClick={this.sortratingasc}></i></th>
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>
@@ -108,9 +160,12 @@ export default class Favourites extends Component {
                                 <nav aria-label="Page navigation example">
                                     <ul class="pagination" >
                                         <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        {
+                                            pagearr.map((value) => (
+                                                <li class="page-item"><a class="page-link" onClick={() => this.handlepagechange(value)}>{value}</a></li>
+                                            ))
+                                        }
+
                                         <li class="page-item"><a class="page-link" href="#">Next</a></li>
                                     </ul>
                                 </nav>
